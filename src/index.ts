@@ -1,18 +1,24 @@
 import { Books } from './books';
-import { msgs_welcome, msgs_confused, msgs_stop } from './data';
+import { Data } from './data';
 const { dialogflow, BasicCard, Suggestions } = require('actions-on-google');
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+
 admin.initializeApp();
+
 const fs = require('fs');
 const app = dialogflow({ debug: true });
 const db = admin.database();
+const data: Data = new Data();
+let booksObject;
+
+
 
 function pickRandomMessage(messages) {
     return messages[Math.floor(Math.random() * messages.length)];
 }
 
-let booksObject;
+
 app.intent('read-scripture', (conv, { book, chapter, verse }) => {
      booksObject = JSON.parse(fs.readFileSync(`${__dirname}/books.json`));
 
@@ -41,15 +47,10 @@ app.fallback((conv) => {
     console.log('Fallback');
     conv.ask(new Suggestions(['Joshua 1 8', 'Genesis 2 9', 'Prodigal Son']));
 
-    const msg = pickRandomMessage(msgs_welcome);
+    const msg = pickRandomMessage(data.msgs_welcome);
 
     conv.ask(`<speak>${msg.short}</speak>`);
-    if (conv.hasScreen) {
-                conv.ask(new BasicCard({
-                    title: msg.short,
-                    text: msg.text,
-                }));
-            }
+
 });
 
 app.intent('Default Fallback Intent', (conv) => {
@@ -57,7 +58,7 @@ app.intent('Default Fallback Intent', (conv) => {
     conv.data.fallbackCount++;
     conv.ask(new Suggestions(['Joshua 1 8', 'Genesis 2 9', 'Prodigal Son']));
     if (conv.data.fallbackCount < 3) {
-        const msg = pickRandomMessage(msgs_confused);
+        const msg = pickRandomMessage(data.msgs_confused);
         conv.ask(`<speak>${msg.short}</speak>`);
             if (conv.hasScreen) {
                 conv.ask(new BasicCard({
@@ -66,7 +67,7 @@ app.intent('Default Fallback Intent', (conv) => {
                 }));
             }
     } else {
-        const msg = pickRandomMessage(msgs_stop);
+        const msg = pickRandomMessage(data.msgs_stop);
         conv.ask(`<speak>${msg.short}</speak>`);
         if (conv.hasScreen) {
             conv.ask(new BasicCard({
@@ -82,7 +83,7 @@ app.intent('Default Welcome Intent', (conv) => {
     console.log('Default Welcome Intent');
     conv.data.fallbackCount = 0;
     conv.ask(new Suggestions(['Joshua 1 8', 'Genesis 2 9', 'Prodigal Son']));
-    const msg = pickRandomMessage(msgs_welcome);
+    const msg = pickRandomMessage(data.msgs_welcome);
     conv.ask(`<speak>${msg.short}</speak>`);
     if (conv.hasScreen) {
         conv.ask(new BasicCard({

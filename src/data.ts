@@ -1,4 +1,6 @@
-export const msgs_confused = [
+export class Data {
+
+msgs_confused = [
     {
         text: 'You can ask me to tell you a bible verse, or a bible story.',
         short: 'sorry! I don\'t understand!'
@@ -9,7 +11,7 @@ export const msgs_confused = [
     },
 ];
 
-export const msgs_welcome = [
+msgs_welcome = [
     {
         text: 'You can ask me to tell you a bible verse, or a bible story.',
         short: ' Hi, I\'m Word Fire!'
@@ -20,9 +22,10 @@ export const msgs_welcome = [
     },
 ];
 
-export const msgs_stop = [
+msgs_stop = [
     {
         short: 'Sorry, I am not getting you.',
         text: 'I\'m going to take a nap. See you next time!',
     }
 ];
+}
