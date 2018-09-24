@@ -1,4 +1,5 @@
 import { Books } from './books';
+import { msgs_welcome, msgs_confused, msgs_stop } from './data';
 const { dialogflow, BasicCard, Suggestions } = require('actions-on-google');
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
@@ -6,36 +7,6 @@ admin.initializeApp();
 const fs = require('fs');
 const app = dialogflow({ debug: true });
 const db = admin.database();
-
-
-const samConfusedMessages = [
-    {
-        text: 'You can ask me to tell you a bible verse, or a bible story.',
-        short: 'sorry! I don\'t understand!'
-    },
-    {
-        text: 'Could you ask differently? You can ask me to tell you a bible verse, or a bible story.',
-        short: 'I\'m confused right now!'
-    },
-];
-
-const samWelcomeMessages = [
-    {
-        text: 'You can ask me to tell you a bible verse, or a bible story.',
-        short: ' Hi, I\'m Word Fire!'
-    },
-    {
-        short: ' It\'s Word time!',
-        text: 'You can ask me to tell you a bible verse, or a bible story.'
-    },
-];
-
-const samGiveUpMessages = [
-    {
-        short: 'Sorry, I am not getting you.',
-        text: 'I\'m going to take a nap. See you next time!',
-    }
-];
 
 function pickRandomMessage(messages) {
     return messages[Math.floor(Math.random() * messages.length)];
@@ -70,7 +41,7 @@ app.fallback((conv) => {
     console.log('Fallback');
     conv.ask(new Suggestions(['Joshua 1 8', 'Genesis 2 9', 'Prodigal Son']));
 
-    const msg = pickRandomMessage(samWelcomeMessages);
+    const msg = pickRandomMessage(msgs_welcome);
 
     conv.ask(`<speak>${msg.short}</speak>`);
     if (conv.hasScreen) {
@@ -86,7 +57,7 @@ app.intent('Default Fallback Intent', (conv) => {
     conv.data.fallbackCount++;
     conv.ask(new Suggestions(['Joshua 1 8', 'Genesis 2 9', 'Prodigal Son']));
     if (conv.data.fallbackCount < 3) {
-        const msg = pickRandomMessage(samConfusedMessages);
+        const msg = pickRandomMessage(msgs_confused);
         conv.ask(`<speak>${msg.short}</speak>`);
             if (conv.hasScreen) {
                 conv.ask(new BasicCard({
@@ -95,7 +66,7 @@ app.intent('Default Fallback Intent', (conv) => {
                 }));
             }
     } else {
-        const msg = pickRandomMessage(samGiveUpMessages);
+        const msg = pickRandomMessage(msgs_stop);
         conv.ask(`<speak>${msg.short}</speak>`);
         if (conv.hasScreen) {
             conv.ask(new BasicCard({
@@ -111,7 +82,7 @@ app.intent('Default Welcome Intent', (conv) => {
     console.log('Default Welcome Intent');
     conv.data.fallbackCount = 0;
     conv.ask(new Suggestions(['Joshua 1 8', 'Genesis 2 9', 'Prodigal Son']));
-    const msg = pickRandomMessage(samWelcomeMessages);
+    const msg = pickRandomMessage(msgs_welcome);
     conv.ask(`<speak>${msg.short}</speak>`);
     if (conv.hasScreen) {
         conv.ask(new BasicCard({
